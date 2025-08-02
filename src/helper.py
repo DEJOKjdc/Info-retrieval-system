@@ -12,13 +12,18 @@ from langchain.chains import ConversationalRetrievalChain
 
 
 
+load_dotenv()  # Loads .env for local development
 
-# IMPORTANT: Please set your Google API key as an environment variable
-# or replace "YOUR_API_KEY" below with your actual key.
-# You can get an API key from the Google AI Studio at https://aistudio.google.com/
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  
-os.environ['GOOGLE_API_KEY'] =  GOOGLE_API_KEY
+GOOGLE_API_KEY = (
+    os.getenv("GOOGLE_API_KEY") or
+    st.secrets.get("google_genai", {}).get("api_key")
+)
+
+if GOOGLE_API_KEY:
+    os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+else:
+    st.error("Google API Key not found in .env or Streamlit secrets.")
+
 
 def get_pdf_text(pdf_docs):
     """
